@@ -85,6 +85,43 @@ namespace Example
 }
 ```
 
+## Attach File in Dropbox With Attachment Helper Class
+
+```csharp
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using SendGrid;
+using SendGrid.Helpers.Mail;
+
+namespace Example
+{
+    internal class Example
+    {
+        private static void Main()
+        {
+            Execute().Wait();
+        }
+
+        static async Task Execute()
+        {
+            var apiKey = Environment.GetEnvironmentVariable("NAME_OF_THE_ENVIRONMENT_VARIABLE_FOR_YOUR_SENDGRID_KEY");
+            var client = new SendGridClient(apiKey);
+            var from = new EmailAddress("test@example.com");
+            var subject = "Subject";
+            var to = new EmailAddress("test@example.com");
+            var body = "Email Body";
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, body, "");
+            var accessToken = "DROPBOX_ACCESS_TOKEN";
+            var attachmentSource = new DropboxAttachmentSource(accessToken, "/file.txt");
+            var attachment = await AttachmentHelper.CreateAttachmentAsync(attachmentSource);
+            msg.AddAttachments(new List<Attachment>() { attachment });
+            var response = await client.SendEmailAsync(msg);
+        }
+    }
+}
+```
+
 <a name="kitchensink"></a>
 # Kitchen Sink - an example with all settings used
 
